@@ -101,6 +101,7 @@ export default {
 .control-button{
   padding: 3.5px 15px;
   margin-left: 0;
+  display: none;
 }
 .h1-text-block{
   margin-top: 47px;
