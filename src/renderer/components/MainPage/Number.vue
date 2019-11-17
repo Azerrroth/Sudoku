@@ -2,7 +2,7 @@
   <el-button 
     class="button" 
     type="primary" plain
-    v-if="num === 0"
+    v-if="value === 0"
     @keyup.native="change($event)"
   > </el-button>
   <el-button
@@ -11,19 +11,14 @@
     v-else
     @keyup.native="change($event)"
   >
-    {{ num }}
+    {{ value }}
   </el-button>
 </template>
 <script>
 export default {
   name: 'number',
-  // data: () => {
-  //   return{
-  //     num: 0
-  //   }
-  // },
   props: {
-    num: {
+    value: {
       type: Number,
       default: 0
     }
@@ -31,13 +26,14 @@ export default {
   methods: {
     change (event) {
       if (event.keyCode === 27) {
-        this.num = 0
+        this.value = 0
       } else if (event.keyCode >= 49 && event.keyCode <= 57) {
-        this.num = event.keyCode - 48
+        this.value = event.keyCode - 48
       } else if (event.keyCode >= 97 && event.keyCode <= 105) {
-        this.num = event.keyCode - 96
-      }
-      this.$forceUpdate()
+        this.value = event.keyCode - 96
+      } else { return }
+      this.$emit('update:value', 9)
+      // this.$forceUpdate()
     }
   }
 }
