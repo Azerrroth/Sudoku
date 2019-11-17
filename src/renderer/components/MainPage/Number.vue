@@ -32,8 +32,7 @@ export default {
       } else if (event.keyCode >= 97 && event.keyCode <= 105) {
         this.value = event.keyCode - 96
       } else { return }
-      this.$emit('update:value', 9)
-      // this.$forceUpdate()
+      this.$emit('update:value', this.value)
     }
   }
 }

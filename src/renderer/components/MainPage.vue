@@ -3,9 +3,9 @@
     <main id="displays">
       <div class="number-side">
         <table class="number-part">
-          <tr class="rows" v-for="(row, index) in numbers" :key="index">
-            <td class="num" v-for="(num, index2) in row" :key="index2">
-              <number v-model="num"></number>
+          <tr class="rows" v-for="count in 9" :key="count*10">
+            <td class="num" v-for="countt in 9" :key="countt-1">
+              <number :value.sync="numbers[count-1][countt-1]"></number>
             </td>
           </tr>
         </table>
@@ -68,7 +68,7 @@ export default {
       console.log(this.numbers)
       for (let row = 0; row < 9; row++) {
         for (let column = 0; column < 9; column++) {
-          this.numbers[row][column] = 2
+          this.numbers[row][column] = 0
         }
       }
       this.$forceUpdate()
