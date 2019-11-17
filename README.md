@@ -1,4 +1,4 @@
-# sudoku
+# Sudoku Solver
 
 > An electron-vue project, to program a game sudoku.
 

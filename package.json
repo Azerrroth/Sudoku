@@ -1,6 +1,6 @@
 {
   "name": "sudoku",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Azerrroth <732814312@qq.com>",
   "description": "An electron-vue project, to program a game sudoku.",
   "license": null,

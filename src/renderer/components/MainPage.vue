@@ -102,7 +102,11 @@ export default {
     },
     Build () {
       console.log(this.Check())
-      console.log(this.numbers)
+      if (this.Check()) {
+        alert('You Win!')
+      } else {
+        alert('You Lose!')
+      }
     },
     FindZero () {
       let count = 0
@@ -165,7 +169,7 @@ export default {
       let MinIndex = NumOfCandidate.indexOf(Min)
       return [Min, MinIndex, posList[MinIndex]]
     },
-    Solve () {
+    async Solve () {
       let temp = this.FindZero()
       let posList = temp[1]
       let count = temp[0]
@@ -187,6 +191,7 @@ export default {
             let y = PopPosList[PopPosList.length - 1][1]
             this.numbers[x][y] = 0
             this.$forceUpdate()
+            await this.sleep(100)
             // 将上一次迭代填入空格的数去除（设为0）
             count += 1
             posList.push(PopPosList[PopPosList.length - 1])
@@ -197,6 +202,8 @@ export default {
           let y = PopPosList[PopPosList.length - 1][1]
           this.numbers[x][y] = PopCandidateList[PopCandidateList.length - 1][0] // 赋前一个侯选位置的可选值 0
           this.$forceUpdate()
+          await this.sleep(100)
+
           PopCandidateList[PopCandidateList.length - 1].splice(0, 1)
           TotalTimes = TotalTimes + 1
         } else {
@@ -204,6 +211,7 @@ export default {
           let y = MinPos[1]
           this.numbers[x][y] = CandidateList[MinIndex][0] // 取出Min Candidate 所有可取值的第一个值
           this.$forceUpdate()
+          await this.sleep(100)
           let PopCandidate = CandidateList[MinIndex]
           CandidateList.splice(MinIndex, 1)
           PopCandidate.splice(0, 1)
@@ -217,7 +225,11 @@ export default {
       }
       console.log(TotalTimes)
       return TotalTimes
+    },
+    sleep (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
     }
+
   }
 }
 </script>
