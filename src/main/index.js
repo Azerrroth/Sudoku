@@ -21,9 +21,9 @@ function createWindow () {
    */
   Menu.setApplicationMenu(false)
   mainWindow = new BrowserWindow({
-    height: 1920, // 546
+    height: 546, // 546
     useContentSize: true,
-    width: 1920, // 748
+    width: 748, // 748
     resizable: false
     // frame: false
   })

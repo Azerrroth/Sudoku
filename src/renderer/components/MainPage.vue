@@ -27,7 +27,7 @@
           <h2 class="h1-text">Sudoku Solver</h2>
         </div>
         <div class="button-bar">
-          <el-button class="function-button"
+          <el-button class="function-button" @click.native="Solve()"
             >求解</el-button><br />
           <el-button class="function-button" @click.native="Clean()"
             >清空</el-button
@@ -59,7 +59,7 @@ export default {
     for (let row = 0; row < 9; row++) {
       this.numbers[row] = []
       for (let column = 0; column < 9; column++) {
-        this.numbers[row][column] = (column + row + 1) % 9
+        this.numbers[row][column] = 0 // (column + row + 1) % 9
       }
     }
   },
@@ -92,7 +92,7 @@ export default {
         for (let j = 0; j < 9; j++) {
           rows[i] += this.numbers[i][j]
           columns[j] += this.numbers[i][j]
-          osums[Math.floor(i / 3)][Math.floor[j / 3]] += this.numbers[i][j]
+          osums[Math.floor(i / 3)][Math.floor(j / 3)] += this.numbers[i][j]
         }
       }
       for (let i = 0; i < 3; i++) {
@@ -101,6 +101,7 @@ export default {
       return rows.every(equals) && columns.every(equals)
     },
     Build () {
+      console.log(this.Check())
       console.log(this.numbers)
     },
     FindZero () {
@@ -111,9 +112,11 @@ export default {
           if (this.numbers[i][j] === 0) {
             let posXY = [i, j]
             posList.push(posXY)
+            count++
           }
         }
       }
+      console.log(count)
       return [count, posList]
     },
     // Compute the list of zero block
@@ -148,6 +151,7 @@ export default {
       }
       return [CandidateList, posList, count]
     },
+    // 找到可填写数字（Candidate）个数最少的位置，返回 数量、序号、位置
     FindMin (maps) {
       let NumOfCandidate = []
       let CandidateList = maps[0]
@@ -166,19 +170,24 @@ export default {
       let posList = temp[1]
       let count = temp[0]
       let TotalTimes = 0
+      // 侯选列表
       let PopCandidateList = []
       let PopPosList = []
       while (count) {
-        let CandidateList = this.ComputeCandidate([count, posList])
+        let CandidateList = this.ComputeCandidate([count, posList])[0]
         temp = this.FindMin([CandidateList, posList, count])
         let Min = temp[0]
         let MinIndex = temp[1]
         let MinPos = temp[2]
+        // 出现有为 0 （未填入数字）的点，且该点没有可以取的值
         if (Min === 0) {
-          while (PopCandidateList[PopCandidateList.length - 1] === 0) {
+          // 回退N步，直到上一个加入Pop Candidate List中的点不只有一种取值可能
+          while (PopCandidateList[PopCandidateList.length - 1].length === 0) {
             let x = PopPosList[PopPosList.length - 1][0]
             let y = PopPosList[PopPosList.length - 1][1]
             this.numbers[x][y] = 0
+            this.$forceUpdate()
+            // 将上一次迭代填入空格的数去除（设为0）
             count += 1
             posList.push(PopPosList[PopPosList.length - 1])
             PopPosList.splice(-1, 1)
@@ -187,21 +196,21 @@ export default {
           let x = PopPosList[PopPosList.length - 1][0]
           let y = PopPosList[PopPosList.length - 1][1]
           this.numbers[x][y] = PopCandidateList[PopCandidateList.length - 1][0] // 赋前一个侯选位置的可选值 0
+          this.$forceUpdate()
           PopCandidateList[PopCandidateList.length - 1].splice(0, 1)
           TotalTimes = TotalTimes + 1
         } else {
           let x = MinPos[0]
           let y = MinPos[1]
-          this.numbers[x][y] = CandidateList[MinIndex][0]
-
+          this.numbers[x][y] = CandidateList[MinIndex][0] // 取出Min Candidate 所有可取值的第一个值
+          this.$forceUpdate()
           let PopCandidate = CandidateList[MinIndex]
           CandidateList.splice(MinIndex, 1)
           PopCandidate.splice(0, 1)
-          PopCandidateList.push(PopCandidate)
-          
+          PopCandidateList.push(PopCandidate) // 将取出的可选数字最小的Candidate 放入Pop Candidate List中
           let PopPos = posList[MinIndex]
           posList.splice(MinIndex, 1)
-          PopPosList.push(PopPos)
+          PopPosList.push(PopPos) // 将取出可选数字最小对应的点放入Pop Pos List 中
           count--
           TotalTimes++
         }
@@ -209,56 +218,6 @@ export default {
       console.log(TotalTimes)
       return TotalTimes
     }
-    /*
-    def Solve_Sokudu(Sokudu):
-    #计算需要填空的坐标及个数:坐标列表:Coord,个数:Count
-    Coord,Count=Locat_Zero(Sokudu)
-    TotalCount=0
-    #弹出的候选数列表
-    PopCandidaList=[]
-    #弹出的坐标列表
-    PopCoordList=[]
-    while Count:
-        #计算需要填空的候补列表:Candidalist
-        CandidaList=Compute_Cadida(Coord,Count,Sokudu)
-        #计算最小的候选数个数的位置
-        Min,MinIndex,MinCoord=Find_Min(CandidaList,Coord,Count)
-        if Min==0:
-            while len(PopCandidaList[-1])==0:
-                #上一个空格的坐标
-                x=PopCoordList[-1][0]
-                y=PopCoordList[-1][1]
-                #还原当前节点值
-                Sokudu[x][y]=0
-                Count=Count+1
-                Coord.append(PopCoordList[-1])
-                #删除当前节点坐标及候选数列表
-                del PopCoordList[-1]
-                del PopCandidaList[-1]
-            #更改上一个空格位置处的值
-            x=PopCoordList[-1][0]
-            y=PopCoordList[-1][1]
-            Sokudu[x][y]=PopCandidaList[-1][0]
-            del PopCandidaList[-1][0]
-            TotalCount=TotalCount+1
-        else:
-            #更改MinCoord位置处空格的值
-            x=MinCoord[0]
-            y=MinCoord[1]
-            Sokudu[x][y]=CandidaList[MinIndex][0]
-            #取出MinCoord位置处的候选数删除候选数的
-            第一项后放到弹出来的候选数列表中
-
-            PopCandida=CandidaList.pop(MinIndex)
-            del PopCandida[0]
-            PopCandidaList.append(PopCandida)
-            #取出MinCoord的位置放到弹出来的坐标列表中
-            PopCoord=Coord.pop(MinIndex)
-            PopCoordList.append(PopCoord)
-            Count=Count-1
-            TotalCount=TotalCount+1
-    return Sokudu,TotalCount
-    */
   }
 }
 </script>
