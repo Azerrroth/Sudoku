@@ -27,12 +27,12 @@
           <h2 class="h1-text">Sudoku Solver</h2>
         </div>
         <div class="button-bar">
-          <el-button class="function-button" @click.native="Solve()"
+          <el-button class="function-button" @click.native="Solve()" v-bind:disabled="Processing"
             >求解</el-button><br />
-          <el-button class="function-button" @click.native="Clean()"
+          <el-button class="function-button" @click.native="Clean()" v-bind:disabled="Processing"
             >清空</el-button
           ><br />
-          <el-button class="function-button" id="random-build"  @click.native="Build()"
+          <el-button class="function-button" id="random-build"  @click.native="Build()" v-bind:disabled="Processing"
             >随机生成</el-button
           >
         </div>
@@ -58,7 +58,8 @@ export default {
     return {
       numbers: [[]],
       correct: false,
-      delayTime: 0
+      Processing: false,
+      delayTime: 100
     }
   },
   created () {
@@ -184,6 +185,7 @@ export default {
       // 侯选列表
       let PopCandidateList = []
       let PopPosList = []
+      this.Processing = true
       while (count) {
         let CandidateList = this.ComputeCandidate([count, posList])[0]
         temp = this.FindMin([CandidateList, posList, count])
@@ -232,6 +234,7 @@ export default {
       }
       console.log(TotalTimes)
       this.correct = this.Check()
+      this.Processing = false
       return TotalTimes
     },
     sleep (ms) {
