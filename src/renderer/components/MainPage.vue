@@ -33,7 +33,7 @@
             >清空</el-button
           ><br />
           <el-button class="function-button" id="random-build"  @click.native="Build()" v-bind:disabled="Processing"
-            >随机生成</el-button
+            >出题</el-button
           >
         </div>
         <div class="check">
@@ -59,7 +59,7 @@ export default {
       numbers: [[]],
       correct: false,
       Processing: false,
-      delayTime: 100
+      delayTime: 50
     }
   },
   created () {
@@ -109,12 +109,24 @@ export default {
       return rows.every(equals) && columns.every(equals)
     },
     Build () {
-      // console.log(this.Check())
-      if (this.Check()) {
-        alert('You Win!')
-      } else {
-        alert('You Lose!')
+      let loopTimes = 150
+      this.Clean()
+      let avaliable = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      while (avaliable.length) {
+        let index = Math.floor(Math.random() * avaliable.length)
+        console.log(index)
+        this.numbers[Math.floor(Math.random() * 9)][Math.floor(Math.random() * 9)] = avaliable[index]
+        console.log(avaliable)
+        avaliable.splice(index, 1)
       }
+      let temp = this.delayTime
+      this.delayTime = 0
+      this.Solve()
+      this.delayTime = temp
+      for (let i = 0; i < loopTimes; i++) {
+        this.numbers[Math.floor(Math.random() * 9)][Math.floor(Math.random() * 9)] = 0
+      }
+      this.correct = this.Check()
     },
     FindZero () {
       let count = 0
@@ -200,7 +212,9 @@ export default {
             let y = PopPosList[PopPosList.length - 1][1]
             this.numbers[x][y] = 0
             this.$forceUpdate()
-            await this.sleep(this.delayTime)
+            if (this.delayTime > 0) {
+              await this.sleep(this.delayTime)
+            }
             // 将上一次迭代填入空格的数去除（设为0）
             count += 1
             posList.push(PopPosList[PopPosList.length - 1])
@@ -211,8 +225,9 @@ export default {
           let y = PopPosList[PopPosList.length - 1][1]
           this.numbers[x][y] = PopCandidateList[PopCandidateList.length - 1][0] // 赋前一个侯选位置的可选值 0
           this.$forceUpdate()
-          await this.sleep(this.delayTime)
-
+          if (this.delayTime > 0) {
+            await this.sleep(this.delayTime)
+          }
           PopCandidateList[PopCandidateList.length - 1].splice(0, 1)
           TotalTimes = TotalTimes + 1
         } else {
@@ -220,7 +235,9 @@ export default {
           let y = MinPos[1]
           this.numbers[x][y] = CandidateList[MinIndex][0] // 取出Min Candidate 所有可取值的第一个值
           this.$forceUpdate()
-          await this.sleep(this.delayTime)
+          if (this.delayTime > 0) {
+            await this.sleep(this.delayTime)
+          }
           let PopCandidate = CandidateList[MinIndex]
           CandidateList.splice(MinIndex, 1)
           PopCandidate.splice(0, 1)
@@ -308,9 +325,9 @@ export default {
   border-radius: 10px;
 }
 #random-build {
-  padding: 12px 11px;
+  /* padding: 12px 11px; */
   margin-bottom: 0;
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 .signature {
   margin-top: 65px;
