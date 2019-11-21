@@ -59,7 +59,7 @@ export default {
       numbers: [[]],
       correct: false,
       Processing: false,
-      delayTime: 50
+      delayTime: 100
     }
   },
   created () {
