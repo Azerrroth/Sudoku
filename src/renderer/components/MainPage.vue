@@ -5,7 +5,7 @@
         <table class="number-part">
           <tr class="rows" v-for="count in 9" :key="count*10">
             <td class="num" v-for="countt in 9" :key="countt-1">
-              <number :value.sync="numbers[count-1][countt-1]"></number>
+              <number :value.sync="numbers[count-1][countt-1]" @update:value="updateNum"></number>
             </td>
           </tr>
         </table>
@@ -36,6 +36,10 @@
             >随机生成</el-button
           >
         </div>
+        <div class="check">
+          <i class="el-icon-check" id="correct" v-show="correct"></i>
+          <i class="el-icon-close" id="error" v-show="!correct"></i>
+        </div>
         <div class="signature">
           <p id="signature-text">Design By Haozhe_Li</p>
         </div>
@@ -52,7 +56,9 @@ export default {
   components: { Number },
   data () {
     return {
-      numbers: [[]]
+      numbers: [[]],
+      correct: false,
+      delayTime: 0
     }
   },
   created () {
@@ -65,12 +71,13 @@ export default {
   },
   methods: {
     Clean () {
-      console.log(this.numbers)
+      // console.log(this.numbers)
       for (let row = 0; row < 9; row++) {
         for (let column = 0; column < 9; column++) {
           this.numbers[row][column] = 0
         }
       }
+      this.correct = this.Check()
       this.$forceUpdate()
     },
     // equals (number) {
@@ -101,7 +108,7 @@ export default {
       return rows.every(equals) && columns.every(equals)
     },
     Build () {
-      console.log(this.Check())
+      // console.log(this.Check())
       if (this.Check()) {
         alert('You Win!')
       } else {
@@ -120,7 +127,7 @@ export default {
           }
         }
       }
-      console.log(count)
+      // console.log(count)
       return [count, posList]
     },
     // Compute the list of zero block
@@ -191,7 +198,7 @@ export default {
             let y = PopPosList[PopPosList.length - 1][1]
             this.numbers[x][y] = 0
             this.$forceUpdate()
-            await this.sleep(100)
+            await this.sleep(this.delayTime)
             // 将上一次迭代填入空格的数去除（设为0）
             count += 1
             posList.push(PopPosList[PopPosList.length - 1])
@@ -202,7 +209,7 @@ export default {
           let y = PopPosList[PopPosList.length - 1][1]
           this.numbers[x][y] = PopCandidateList[PopCandidateList.length - 1][0] // 赋前一个侯选位置的可选值 0
           this.$forceUpdate()
-          await this.sleep(100)
+          await this.sleep(this.delayTime)
 
           PopCandidateList[PopCandidateList.length - 1].splice(0, 1)
           TotalTimes = TotalTimes + 1
@@ -211,7 +218,7 @@ export default {
           let y = MinPos[1]
           this.numbers[x][y] = CandidateList[MinIndex][0] // 取出Min Candidate 所有可取值的第一个值
           this.$forceUpdate()
-          await this.sleep(100)
+          await this.sleep(this.delayTime)
           let PopCandidate = CandidateList[MinIndex]
           CandidateList.splice(MinIndex, 1)
           PopCandidate.splice(0, 1)
@@ -224,10 +231,14 @@ export default {
         }
       }
       console.log(TotalTimes)
+      this.correct = this.Check()
       return TotalTimes
     },
     sleep (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
+    },
+    updateNum () {
+      this.correct = this.Check()
     }
 
   }
@@ -296,9 +307,10 @@ export default {
 #random-build {
   padding: 12px 11px;
   margin-bottom: 0;
+  visibility: hidden;
 }
 .signature {
-  margin-top: 181px;
+  margin-top: 65px;
 }
 #signature-text {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
@@ -311,5 +323,21 @@ export default {
   font-size: 10px;
   color: rgb(218, 218, 218);
   text-align: right;
+}
+.check {
+  margin-top: 74px;
+  margin-left: 52px;
+}
+#error {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-size: 40px;
+  color: rgb(245, 108, 108);
+}
+#correct {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-size: 40px;
+  color: rgb(103, 194, 58);
 }
 </style>
