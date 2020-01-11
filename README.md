@@ -1,5 +1,7 @@
 # 数独——Sudoku Solver
 
+> 李浩哲 1712898
+
 ## 部署说明
 
 本项目基于`Node.js`的`Vue.js`及`Electron`编写，使用`Vue.js`组件完成页面功能实现，使用`Electron`生成桌面端应用。
