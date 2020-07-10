@@ -10,7 +10,7 @@
 ### 运行环境
 ``` java
 - Node.js 10.16.0
-- Electron 2.0.4
+- Electron 7.2.4
 - Vue.js 2.5.16
 - Element-UI 2.12.0
 ```
